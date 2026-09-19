@@ -112,17 +112,17 @@ schreiben(marke_svg(konturen, box, 'url(#verlauf)', lambda d: rmse.__setitem__(0
           HIER / 'codium_cnl.svg')
 schreiben(marke_svg(konturen, box, '#ffffff'), HIER / 'codium_clt.svg')
 
-# App-Icon: 1024er Flaeche, weisses abgerundetes Quadrat (Radius 22 %), Marke auf 62 % Breite
+# App-Icon: 1024er Flaeche, weisses abgerundetes Quadrat (Radius 22 %), Marke auf 72 % Breite
 icon = ET.Element(f'{{{NS}}}svg', width='1024', height='1024', viewBox='0 0 1024 1024')
 defs = ET.SubElement(icon, f'{{{NS}}}defs')
 farbverlauf(bild, symbol, 'verlauf', defs)
 platte = ET.SubElement(defs, f'{{{NS}}}linearGradient', id='platte', x1='0', y1='0', x2='0', y2='1')
 ET.SubElement(platte, f'{{{NS}}}stop', offset='0', **{'stop-color': '#ffffff'})
-ET.SubElement(platte, f'{{{NS}}}stop', offset='1', **{'stop-color': '#f2f3f5'})
+ET.SubElement(platte, f'{{{NS}}}stop', offset='1', **{'stop-color': '#eef2f8'})
 ET.SubElement(icon, f'{{{NS}}}rect', x='64', y='64', width='896', height='896', rx='200', fill='url(#platte)')
 ET.SubElement(icon, f'{{{NS}}}rect', x='64', y='64', width='896', height='896', rx='200', fill='none',
               stroke='#c9ccd1', **{'stroke-width': '4'})
-skala = 0.62 * 896 / seite
+skala = 0.72 * 896 / seite
 g = ET.SubElement(icon, f'{{{NS}}}g', fill='url(#verlauf)', **{'fill-rule': 'evenodd'},
                   transform=f'translate({512 - cx * skala:.3f} {512 - cy * skala:.3f}) scale({skala:.5f})')
 for el in konturen:
