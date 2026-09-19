@@ -42,8 +42,12 @@
 		"commands": [
 			{ "command": "terminalHub.newSession", "title": "New Claude Session", "category": "Claude", "icon": "$(add)" },
 			{ "command": "terminalHub.newSessionSkip", "title": "New Claude Session (skip permissions)", "category": "Claude", "icon": "$(zap)" },
+			{ "command": "terminalHub.continueLast", "title": "Continue Last Session", "category": "Claude", "icon": "$(debug-continue)" },
+			{ "command": "terminalHub.continueLastSkip", "title": "Continue Last Session (skip permissions)", "category": "Claude" },
 			{ "command": "terminalHub.resume", "title": "Resume Session", "category": "Claude", "icon": "$(debug-start)" },
 			{ "command": "terminalHub.resumeSkip", "title": "Resume Session (skip permissions)", "category": "Claude", "icon": "$(zap)" },
+			{ "command": "terminalHub.fork", "title": "Fork Session", "category": "Claude" },
+			{ "command": "terminalHub.forkSkip", "title": "Fork Session (skip permissions)", "category": "Claude" },
 			{ "command": "terminalHub.copySessionId", "title": "Copy Session ID", "category": "Claude" },
 			{ "command": "terminalHub.refresh", "title": "Refresh", "category": "Claude", "icon": "$(refresh)" },
 			{ "command": "terminalHub.revealCommand", "title": "Reveal Command in Terminal", "category": "Terminal" },
@@ -54,6 +58,8 @@
 			"commandPalette": [
 				{ "command": "terminalHub.resume", "when": "false" },
 				{ "command": "terminalHub.resumeSkip", "when": "false" },
+				{ "command": "terminalHub.fork", "when": "false" },
+				{ "command": "terminalHub.forkSkip", "when": "false" },
 				{ "command": "terminalHub.copySessionId", "when": "false" },
 				{ "command": "terminalHub.revealCommand", "when": "false" },
 				{ "command": "terminalHub.copyCommand", "when": "false" },
@@ -62,11 +68,15 @@
 			"view/title": [
 				{ "command": "terminalHub.newSession", "when": "view == terminalHub.sessions", "group": "navigation@1" },
 				{ "command": "terminalHub.newSessionSkip", "when": "view == terminalHub.sessions", "group": "navigation@2" },
+				{ "command": "terminalHub.continueLast", "when": "view == terminalHub.sessions", "group": "navigation@3" },
+				{ "command": "terminalHub.continueLastSkip", "when": "view == terminalHub.sessions", "group": "1_claude@1" },
 				{ "command": "terminalHub.refresh", "when": "view == terminalHub.sessions || view == terminalHub.commands", "group": "navigation@9" }
 			],
 			"view/item/context": [
 				{ "command": "terminalHub.resume", "when": "view == terminalHub.sessions && viewItem == session", "group": "inline@1" },
 				{ "command": "terminalHub.resumeSkip", "when": "view == terminalHub.sessions && viewItem == session", "group": "inline@2" },
+				{ "command": "terminalHub.fork", "when": "view == terminalHub.sessions && (viewItem == session || viewItem == running)", "group": "1_fork@1" },
+				{ "command": "terminalHub.forkSkip", "when": "view == terminalHub.sessions && (viewItem == session || viewItem == running)", "group": "1_fork@2" },
 				{ "command": "terminalHub.copySessionId", "when": "view == terminalHub.sessions && (viewItem == session || viewItem == running)" },
 				{ "command": "terminalHub.copyCommand", "when": "view == terminalHub.commands && viewItem == command", "group": "inline@1" },
 				{ "command": "terminalHub.rerunCommand", "when": "view == terminalHub.commands && viewItem == command", "group": "inline@2" }

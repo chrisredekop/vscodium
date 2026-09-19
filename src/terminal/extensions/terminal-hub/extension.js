@@ -433,31 +433,35 @@ function activate(context) {
 		status.show();
 	};
 
+	// Debounced refresh with a flood threshold: Claude writes history and transcripts in bursts.
 	let pending;
+	let burst = 0;
 	const refreshSessions = () => {
+		burst++;
 		clearTimeout(pending);
 		pending = setTimeout(() => {
+			burst = 0;
 			sessions.refresh();
 			updateStatus();
-		}, 300);
+		}, burst > 10 ? 3000 : 500);
 	};
 	const refreshCommands = () => commands.refresh();
 
 	// Watchers: Claude writes session files and history; terminals report shell executions.
-	for (const target of [SESSIONS_DIR, HISTORY_FILE, LABELS_FILE, STATS_FILE]) {
-		try {
-			const watcher = fs.watch(target, { persistent: false }, refreshSessions);
-			watcher.on('error', () => { /* file may not exist yet */ });
-			context.subscriptions.push({ dispose: () => watcher.close() });
-		} catch {
-			// missing file or directory: refreshed by the timer below
-		}
-	}
+	const watch = (base, glob) => {
+		const watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(vscode.Uri.file(base), glob));
+		context.subscriptions.push(watcher, watcher.onDidChange(refreshSessions), watcher.onDidCreate(refreshSessions), watcher.onDidDelete(refreshSessions));
+	};
+	watch(CLAUDE_DIR, '{history.jsonl,session-labels.json,stats-cache.json}');
+	watch(SESSIONS_DIR, '*.json');
+	// Fallback for process exits without file changes (a session file may linger after its pid died).
 	const timer = setInterval(refreshSessions, 30000);
 	context.subscriptions.push({ dispose: () => clearInterval(timer) });
 
 	context.subscriptions.push(
-		vscode.window.onDidOpenTerminal(refreshCommands),
+		// Terminal names and shell integration arrive shortly after the terminal opens.
+		vscode.window.onDidOpenTerminal(() => { refreshCommands(); setTimeout(refreshCommands, 2000); }),
+		vscode.window.onDidChangeTerminalState(refreshCommands),
 		vscode.window.onDidCloseTerminal(refreshCommands),
 		vscode.window.onDidChangeActiveTerminal(refreshCommands),
 		vscode.window.onDidStartTerminalShellExecution(refreshCommands),
@@ -467,12 +471,18 @@ function activate(context) {
 
 	const skipFlag = () => config().get('skipPermissionsFlag', '--dangerously-skip-permissions');
 
-	async function pickProject() {
+	async function pickProject(preferred) {
 		const seen = new Set();
 		const picks = [];
+		if (preferred) {
+			seen.add(preferred);
+			picks.push({ label: path.basename(preferred), description: `${preferred} · most recent`, cwd: preferred });
+		}
 		for (const folder of vscode.workspace.workspaceFolders || []) {
-			seen.add(folder.uri.fsPath);
-			picks.push({ label: folder.name, description: folder.uri.fsPath, cwd: folder.uri.fsPath });
+			if (!seen.has(folder.uri.fsPath)) {
+				seen.add(folder.uri.fsPath);
+				picks.push({ label: folder.name, description: folder.uri.fsPath, cwd: folder.uri.fsPath });
+			}
 		}
 		for (const s of data.recentSessions()) {
 			if (s.project && !seen.has(s.project)) {
@@ -500,19 +510,35 @@ function activate(context) {
 		openClaudeTerminal(cwd, skip ? [skipFlag()] : [], 'claude');
 	}
 
-	function resume(item, skip) {
+	function resume(item, skip, fork) {
 		const s = item && item.session;
 		if (!s) {
 			return;
 		}
-		openClaudeTerminal(s.project, ['--resume', s.sessionId, ...(skip ? [skipFlag()] : [])], `claude · ${oneLine(s.label || s.first || s.sessionId, 30)}`);
+		const project = s.project || s.cwd;
+		const title = oneLine(s.label || s.name || s.first || s.sessionId, 30);
+		openClaudeTerminal(project, ['--resume', s.sessionId, ...(fork ? ['--fork-session'] : []), ...(skip ? [skipFlag()] : [])], `claude · ${fork ? 'fork of ' : ''}${title}`);
+	}
+
+	async function continueLast(skip) {
+		// `claude --continue` resumes the most recent session of the folder it runs in.
+		const recent = data.recentSessions();
+		const cwd = await pickProject(recent.length ? recent[0].project : undefined);
+		if (cwd === undefined && !(vscode.workspace.workspaceFolders || []).length) {
+			return;
+		}
+		openClaudeTerminal(cwd, ['--continue', ...(skip ? [skipFlag()] : [])], 'claude · continue');
 	}
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('terminalHub.newSession', () => newSession(false)),
 		vscode.commands.registerCommand('terminalHub.newSessionSkip', () => newSession(true)),
-		vscode.commands.registerCommand('terminalHub.resume', item => resume(item, false)),
-		vscode.commands.registerCommand('terminalHub.resumeSkip', item => resume(item, true)),
+		vscode.commands.registerCommand('terminalHub.continueLast', () => continueLast(false)),
+		vscode.commands.registerCommand('terminalHub.continueLastSkip', () => continueLast(true)),
+		vscode.commands.registerCommand('terminalHub.resume', item => resume(item, false, false)),
+		vscode.commands.registerCommand('terminalHub.resumeSkip', item => resume(item, true, false)),
+		vscode.commands.registerCommand('terminalHub.fork', item => resume(item, false, true)),
+		vscode.commands.registerCommand('terminalHub.forkSkip', item => resume(item, true, true)),
 		vscode.commands.registerCommand('terminalHub.copySessionId', item => item && item.session && vscode.env.clipboard.writeText(item.session.sessionId)),
 		vscode.commands.registerCommand('terminalHub.refresh', () => { refreshSessions(); refreshCommands(); }),
 		vscode.commands.registerCommand('terminalHub.revealCommand', item => item && item.entry && vscode.commands.executeCommand('workbench.action.terminal.revealCommandIndex', { processId: item.processId, index: item.entry.index })),

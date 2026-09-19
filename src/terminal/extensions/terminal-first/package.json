@@ -29,6 +29,12 @@
 			"terminal.integrated.stickyScroll.enabled": true,
 			"terminal.integrated.enableImages": true,
 			"terminal.integrated.defaultProfile.windows": "PowerShell",
+			"terminal.integrated.profiles.windows": {
+				"PowerShell": { "source": "PowerShell", "icon": "terminal-powershell", "color": "terminal.ansiBlue" },
+				"Windows PowerShell": { "path": "${env:windir}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "icon": "terminal-powershell", "color": "terminal.ansiCyan" },
+				"Command Prompt": { "path": ["${env:windir}\\Sysnative\\cmd.exe", "${env:windir}\\System32\\cmd.exe"], "args": [], "icon": "terminal-cmd", "color": "terminal.ansiYellow" },
+				"Git Bash": { "source": "Git Bash", "icon": "terminal-bash", "color": "terminal.ansiGreen" }
+			},
 			"terminal.integrated.fontFamily": "'Cascadia Mono', 'Cascadia Code', Consolas, 'Courier New', monospace",
 			"terminal.integrated.cursorStyle": "line",
 			"terminal.integrated.cursorBlinking": true,

@@ -1,0 +1,56 @@
+diff --git a/src/vs/platform/windows/electron-main/windows.ts b/src/vs/platform/windows/electron-main/windows.ts
+index 7c4f02ef..97893d63 100644
+--- a/src/vs/platform/windows/electron-main/windows.ts
++++ b/src/vs/platform/windows/electron-main/windows.ts
+@@ -180,2 +180,9 @@ export function defaultBrowserWindowOptions(accessor: ServicesAccessor, windowSt
+ 		}
++
++		// Terminal-first: system background material (Mica/Acrylic) on Windows 11
++		const backgroundMaterial = configurationService.getValue<string>('window.backgroundMaterial');
++		if (backgroundMaterial === 'mica' || backgroundMaterial === 'acrylic' || backgroundMaterial === 'tabbed') {
++			options.backgroundMaterial = backgroundMaterial;
++			options.backgroundColor = '#00000000';
++		}
+ 	}
+diff --git a/src/vs/workbench/browser/media/style.css b/src/vs/workbench/browser/media/style.css
+index 8c7a7a5f..7621a119 100644
+--- a/src/vs/workbench/browser/media/style.css
++++ b/src/vs/workbench/browser/media/style.css
+@@ -396,2 +396,7 @@ body {
+     outline-offset: calc(var(--vscode-workbench-sidebar-font-size) * -0.076923)
+-}
+\ No newline at end of file
++}
++
++/* Terminal-first: transparent workbench when window.backgroundMaterial is active */
++.monaco-workbench.background-material {
++	background-color: transparent !important;
++}
+diff --git a/src/vs/workbench/electron-browser/desktop.contribution.ts b/src/vs/workbench/electron-browser/desktop.contribution.ts
+index 66e944a8..c3ae1a4e 100644
+--- a/src/vs/workbench/electron-browser/desktop.contribution.ts
++++ b/src/vs/workbench/electron-browser/desktop.contribution.ts
+@@ -242,2 +242,10 @@ import product from '../../platform/product/common/product.js';
+ 			},
++			'window.backgroundMaterial': {
++				'type': 'string',
++				'enum': ['none', 'mica', 'acrylic', 'tabbed'],
++				'default': 'none',
++				'scope': ConfigurationScope.APPLICATION,
++				'included': isWindows,
++				'markdownDescription': localize('window.backgroundMaterial', "Windows 11: draw the window background with a system material (Mica or Acrylic). The material is only visible where workbench colors are translucent, e.g. `#0c0c0cb0` for `editor.background`, `terminal.background`, `editorGroupHeader.tabsBackground`, `titleBar.activeBackground` and `statusBar.background` in {0}. Changes require a full restart to apply.", '`#workbench.colorCustomizations#`')
++			},
+ 			'window.doubleClickIconToClose': {
+diff --git a/src/vs/workbench/electron-browser/window.ts b/src/vs/workbench/electron-browser/window.ts
+index b60c0adc..9199ce3b 100644
+--- a/src/vs/workbench/electron-browser/window.ts
++++ b/src/vs/workbench/electron-browser/window.ts
+@@ -137,2 +137,8 @@ export class NativeWindow extends BaseWindow {
+ 
++		// Terminal-first: let the system background material show through the workbench
++		const backgroundMaterial = this.configurationService.getValue<string>('window.backgroundMaterial');
++		if (isWindows && backgroundMaterial && backgroundMaterial !== 'none') {
++			this.layoutService.mainContainer.classList.add('background-material');
++		}
++
+ 		this.registerListeners();
