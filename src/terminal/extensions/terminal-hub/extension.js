@@ -552,6 +552,18 @@ function activate(context) {
 	);
 
 	updateStatus();
+
+	// Fresh windows open the Explorer in the primary side bar; show Claude Code Manager there instead.
+	if (config().get('openManagerOnStartup', true) && vscode.extensions.getExtension('vishalguptax.claude-manager')) {
+		setTimeout(async () => {
+			try {
+				await vscode.commands.executeCommand('workbench.view.extension.claudeCodeManager');
+				await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
+			} catch {
+				// manager view unavailable: keep the default layout
+			}
+		}, 1500);
+	}
 }
 
 function deactivate() { }

@@ -88,6 +88,11 @@
 		"configuration": {
 			"title": "Terminal Hub",
 			"properties": {
+				"terminalHub.openManagerOnStartup": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show Claude Code Manager in the primary side bar when a window opens."
+				},
 				"terminalHub.claudeCommand": {
 					"type": "string",
 					"default": "claude",
