@@ -26,7 +26,6 @@
     "vscode": "^1.90.0",
     "node": ">=20"
   },
-  "packageManager": "pnpm@11.10.0",
   "categories": [
     "AI",
     "Machine Learning",
@@ -323,74 +322,5 @@
         }
       }
     }
-  },
-  "scripts": {
-    "build:extension": "node scripts/build-extension.mjs",
-    "build:webview": "node scripts/build-webview.mjs",
-    "build:css": "node scripts/build-css.js",
-    "build": "node scripts/build-extension.mjs && node scripts/build-webview.mjs && node scripts/build-css.js",
-    "watch:extension": "node scripts/build-extension.mjs --watch",
-    "watch:webview": "node scripts/build-webview.mjs --watch",
-    "watch": "node scripts/build-extension.mjs --watch & node scripts/build-webview.mjs --watch",
-    "typecheck": "tsc --noEmit",
-    "check": "biome check .",
-    "format": "biome format --write .",
-    "size": "size-limit",
-    "release": "pnpm test && pnpm run build && node -e \"require('fs').readdirSync('dist').filter(f=>f.endsWith('.vsix')).forEach(f=>require('fs').unlinkSync('dist/'+f))\" && pnpm dlx @vscode/vsce package --no-dependencies -o dist/",
-    "release:patch": "pnpm version patch --no-git-tag-version && pnpm run release",
-    "release:minor": "pnpm version minor --no-git-tag-version && pnpm run release",
-    "release:major": "pnpm version major --no-git-tag-version && pnpm run release",
-    "publish:openvsx": "pnpm dlx ovsx publish dist/*.vsix -p",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "compile:integration": "tsc -p tsconfig.integration.json",
-    "pretest:integration": "pnpm run build && pnpm run compile:integration",
-    "test:integration": "node ./out/integration/runTest.js",
-    "perf:fixtures": "node scripts/perf/generate-fixtures.mjs",
-    "perf:measure": "node scripts/perf/measure.mjs"
-  },
-  "size-limit": [
-    {
-      "path": "dist/extension.js",
-      "limit": "400 KB"
-    },
-    {
-      "path": "dist/webview/main.js",
-      "limit": "60 KB"
-    },
-    {
-      "name": "webview feature chunks (sum; ~45% is preact + signals + valibot)",
-      "path": "dist/webview/chunks/*.js",
-      "limit": "70 KB"
-    },
-    {
-      "path": "dist/webview/styles.css",
-      "limit": "50 KB"
-    }
-  ],
-  "devDependencies": {
-    "@biomejs/biome": "^2.5.7",
-    "@size-limit/file": "^12.1.0",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/preact": "^3.2.4",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "^25.5.2",
-    "@types/vscode": "1.90.0",
-    "@vitest/coverage-v8": "^4.1.10",
-    "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.28.1",
-    "glob": "^13.0.6",
-    "happy-dom": "^20.11.1",
-    "mocha": "^11.8.0",
-    "sharp": "^0.35.3",
-    "size-limit": "^12.1.0",
-    "typescript": "^6.0.2",
-    "vitest": "^4.1.10"
-  },
-  "dependencies": {
-    "@preact/signals": "^2.11.0",
-    "clsx": "^2.1.1",
-    "preact": "^10.29.8",
-    "valibot": "^1.4.0"
   }
 }

@@ -28,7 +28,7 @@ for file in "${SRC}"/media/*; do
 done
 
 # activate at startup so the status bar chip and views are ready without a first click
-jq '.activationEvents = ["onStartupFinished"]' "${DST}/package.json" > "${DST}/package.json.tmp"
+jq '.activationEvents = ["onStartupFinished"] | del(.dependencies, .devDependencies, .scripts, .packageManager, .pnpm, ."size-limit", ."lint-staged")' "${DST}/package.json" > "${DST}/package.json.tmp"
 mv "${DST}/package.json.tmp" "${DST}/package.json"
 
 printf 'vendored from %s\ncommit %s\nversion %s\n' "${SRC}" "${COMMIT}" "${VERSION}" > "${DST}/VENDORED.txt"
