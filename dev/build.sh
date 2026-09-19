@@ -122,7 +122,7 @@ if [[ "${SKIP_BUILD}" == "no" ]]; then
       git reset -q --hard HEAD~
     done
 
-    rm -rf .build out*
+    rm -rf .build out* cli/openssl
 
     cd ..
   fi

@@ -22,6 +22,7 @@
 			"workbench.editor.empty.hint": "hidden",
 			"workbench.tips.enabled": false,
 			"workbench.editor.showTabs": "multiple",
+			"window.closeWhenEmpty": true,
 			"terminal.integrated.gpuAcceleration": "on",
 			"terminal.integrated.shellIntegration.enabled": true,
 			"terminal.integrated.suggest.enabled": true,

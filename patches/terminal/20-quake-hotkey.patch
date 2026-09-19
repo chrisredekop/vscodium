@@ -1,0 +1,56 @@
+diff --git a/src/vs/code/electron-main/app.ts b/src/vs/code/electron-main/app.ts
+index 10a54faa..faee8e9d 100644
+--- a/src/vs/code/electron-main/app.ts
++++ b/src/vs/code/electron-main/app.ts
+@@ -1592,2 +1592,32 @@ export class CodeApplication extends Disposable {
+ 
++	private installQuakeHotkey(): void {
++		const windowsMainService = this.windowsMainService;
++		const accelerator = this.configurationService.getValue<string>('window.quakeHotkey') ?? 'Ctrl+Alt+T';
++		if (!accelerator || !windowsMainService) {
++			return;
++		}
++
++		try {
++			const registered = globalShortcut.register(accelerator, () => {
++				const win = windowsMainService.getLastActiveWindow()?.win;
++				if (!win) {
++					windowsMainService.openEmptyWindow({ context: OpenContext.DESKTOP });
++				} else if (win.isFocused() && !win.isMinimized()) {
++					win.minimize();
++				} else {
++					if (win.isMinimized()) {
++						win.restore();
++					}
++					win.show();
++					win.focus();
++				}
++			});
++			if (!registered) {
++				this.logService.warn(`[QuakeHotkey] failed to register '${accelerator}', it may be taken by another application`);
++			}
++		} catch (error) {
++			this.logService.warn(`[QuakeHotkey] invalid accelerator '${accelerator}'`, error);
++		}
++	}
++
+ 	private afterWindowOpen(instantiationService: IInstantiationService): void {
+@@ -1602,2 +1632,5 @@ export class CodeApplication extends Disposable {
+ 
++		// Terminal-first: system-wide hotkey to summon or minimize the last active window
++		this.installQuakeHotkey();
++
+ 		// Remote Authorities
+diff --git a/src/vs/workbench/electron-browser/desktop.contribution.ts b/src/vs/workbench/electron-browser/desktop.contribution.ts
+index 85bc0e4d..66e944a8 100644
+--- a/src/vs/workbench/electron-browser/desktop.contribution.ts
++++ b/src/vs/workbench/electron-browser/desktop.contribution.ts
+@@ -236,2 +236,8 @@ import product from '../../platform/product/common/product.js';
+ 			},
++			'window.quakeHotkey': {
++				'type': 'string',
++				'default': 'Ctrl+Alt+T',
++				'scope': ConfigurationScope.APPLICATION,
++				'markdownDescription': localize('window.quakeHotkey', "System-wide hotkey in Electron accelerator format (e.g. `Ctrl+Alt+T`) that brings the last active window to the front, or minimizes it when it is already focused. Leave empty to disable. Changes require a full restart to apply.")
++			},
+ 			'window.doubleClickIconToClose': {
