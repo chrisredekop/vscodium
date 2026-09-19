@@ -18,8 +18,9 @@ export SKIP_SOURCE="no"
 export VSCODE_LATEST="no"
 export VSCODE_QUALITY="stable"
 export VSCODE_SKIP_NODE_VERSION_CHECK="yes"
+export TERMINAL_FIRST="no"
 
-while getopts ":ilops" opt; do
+while getopts ":ilopst" opt; do
   case "$opt" in
     i)
       export ASSETS_REPOSITORY="VSCodium/vscodium-insiders"
@@ -37,6 +38,10 @@ while getopts ":ilops" opt; do
       ;;
     s)
       export SKIP_SOURCE="yes"
+      ;;
+    t)
+      export BINARY_NAME="codium-term"
+      export TERMINAL_FIRST="yes"
       ;;
     *)
       ;;
@@ -80,6 +85,7 @@ echo "SKIP_ASSETS=\"${SKIP_ASSETS}\""
 echo "VSCODE_ARCH=\"${VSCODE_ARCH}\""
 echo "VSCODE_LATEST=\"${VSCODE_LATEST}\""
 echo "VSCODE_QUALITY=\"${VSCODE_QUALITY}\""
+echo "TERMINAL_FIRST=\"${TERMINAL_FIRST}\""
 
 if [[ "${SKIP_SOURCE}" == "no" ]]; then
   rm -rf vscode* VSCode*

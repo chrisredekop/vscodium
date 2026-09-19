@@ -8,7 +8,9 @@ GH_REPO_PATH="${GH_REPO_PATH:-VSCodium/vscodium}"
 ORG_NAME="${ORG_NAME:-VSCodium}"
 TUNNEL_APP_NAME="${TUNNEL_APP_NAME:-"${BINARY_NAME}-tunnel"}"
 
-if [[ "${VSCODE_QUALITY}" == "insider" ]]; then
+if [[ "${TERMINAL_FIRST}" == "yes" ]]; then
+  GLOBAL_DIRNAME="${GLOBAL_DIRNAME:-"${APP_NAME_LC}"}-term"
+elif [[ "${VSCODE_QUALITY}" == "insider" ]]; then
   GLOBAL_DIRNAME="${GLOBAL_DIRNAME:-"${APP_NAME_LC}"}-insiders"
 else
   GLOBAL_DIRNAME="${GLOBAL_DIRNAME:-"${APP_NAME_LC}"}"

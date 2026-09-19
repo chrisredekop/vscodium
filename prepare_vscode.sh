@@ -9,6 +9,10 @@ else
   cp -rp src/stable/* vscode/
 fi
 
+if [[ "${TERMINAL_FIRST}" == "yes" ]]; then
+  cp -rp src/terminal/* vscode/
+fi
+
 cp -f LICENSE vscode/LICENSE.txt
 
 cd vscode || { echo "'vscode' dir not found"; exit 1; }
@@ -121,6 +125,35 @@ else
   setpath "product" "win32ContextMenu.arm64.clsid" "4852FC55-4A84-4EA1-9C86-D53BE3DF83C0"
 fi
 
+if [[ "${TERMINAL_FIRST}" == "yes" ]]; then
+  setpath "product" "nameShort" "VSCodium Terminal"
+  setpath "product" "nameLong" "VSCodium Terminal"
+  setpath "product" "applicationName" "codium-term"
+  setpath "product" "dataFolderName" ".vscodium-term"
+  setpath "product" "linuxIconName" "vscodium-term"
+  setpath "product" "urlProtocol" "vscodium-term"
+  setpath "product" "serverApplicationName" "codium-server-term"
+  setpath "product" "serverDataFolderName" ".vscodium-server-term"
+  setpath "product" "darwinBundleIdentifier" "com.vscodium.VSCodiumTerminal"
+  setpath "product" "win32AppUserModelId" "VSCodium.VSCodiumTerminal"
+  setpath "product" "win32DirName" "VSCodium Terminal"
+  setpath "product" "win32MutexName" "vscodiumterminal"
+  setpath "product" "win32NameVersion" "VSCodium Terminal"
+  setpath "product" "win32RegValueName" "VSCodiumTerminal"
+  setpath "product" "win32ShellNameShort" "VSCodium Terminal"
+  setpath "product" "win32AppId" "{{81493B49-67B3-4A3C-B856-F73E2BB79CF6}"
+  setpath "product" "win32x64AppId" "{{749F786A-C23C-436E-B8D6-5479E09DA67B}"
+  setpath "product" "win32arm64AppId" "{{D7C5CF25-29DA-454B-A4A2-4ADD0BAA4173}"
+  setpath "product" "win32UserAppId" "{{4400E8CB-9CDC-48CB-8065-995ACC7668E2}"
+  setpath "product" "win32x64UserAppId" "{{72DACF3E-91BB-46DC-855D-DB5BCA8EC717}"
+  setpath "product" "win32arm64UserAppId" "{{A45AB051-EECD-4606-8FEE-0FE1D915C70A}"
+  setpath "product" "tunnelApplicationName" "codium-term-tunnel"
+  setpath "product" "win32TunnelServiceMutex" "vscodiumterminal-tunnelservice"
+  setpath "product" "win32TunnelMutex" "vscodiumterminal-tunnel"
+  setpath "product" "win32ContextMenu.x64.clsid" "C6C1DD07-225B-409C-81E2-EDDFEA673F49"
+  setpath "product" "win32ContextMenu.arm64.clsid" "4B6DE9CA-06B7-4118-BE65-0D2041CF18DA"
+fi
+
 setpath_json "product" "tunnelApplicationConfig" '{}'
 
 jsonTmp=$( jq -s '.[0] * .[1]' product.json ../product.json )
@@ -169,6 +202,14 @@ fi
 
 if [[ -d "../patches/${OS_NAME}/" ]]; then
   for file in "../patches/${OS_NAME}/"*.patch; do
+    if [[ -f "${file}" ]]; then
+      apply_patch "${file}"
+    fi
+  done
+fi
+
+if [[ "${TERMINAL_FIRST}" == "yes" ]]; then
+  for file in ../patches/terminal/*.patch; do
     if [[ -f "${file}" ]]; then
       apply_patch "${file}"
     fi

@@ -1,0 +1,9 @@
+diff --git a/src/vs/workbench/browser/workbench.contribution.ts b/src/vs/workbench/browser/workbench.contribution.ts
+index 601d104b..75576718 100644
+--- a/src/vs/workbench/browser/workbench.contribution.ts
++++ b/src/vs/workbench/browser/workbench.contribution.ts
+@@ -984,3 +984,3 @@ const registry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Con
+ 				],
+-				'default': isWeb ? 'compact' : 'classic',
++				'default': isWeb ? 'compact' : 'toggle',
+ 				'scope': ConfigurationScope.APPLICATION,
