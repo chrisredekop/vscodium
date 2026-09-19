@@ -1,0 +1,3 @@
+vendored from /c/dev/claude-code-manager
+commit 6f9b8be
+version 2.13.0

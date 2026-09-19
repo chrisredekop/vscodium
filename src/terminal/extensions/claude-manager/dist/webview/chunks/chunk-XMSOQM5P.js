@@ -1,0 +1,1 @@
+var e=null;function d(t){e=t}function o(t){return e?.getState?e.getState()?.[t]:void 0}function r(t,n){if(!e?.setState||!e.getState)return;let i=e.getState()??{};i[t]=n,e.setState(i)}export{d as a,o as b,r as c};
