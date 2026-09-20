@@ -1,8 +1,8 @@
 {
 	"name": "terminal-hub",
 	"displayName": "Terminal Hub",
-	"description": "Keeps one terminal open, starts with side bars closed, and installs Claude Code Manager from Open VSX when missing.",
-	"version": "1.2.0",
+	"description": "Terminal-first helpers: keeps one terminal open, shows Claude Code Manager on the right, pastes clipboard images as files (Alt+V), input editor for long prompts, YAML workflows.",
+	"version": "1.3.0",
 	"publisher": "vscodium",
 	"license": "MIT",
 	"engines": {
@@ -17,10 +17,28 @@
 	],
 	"contributes": {
 		"commands": [
-			{ "command": "terminalHub.installManager", "title": "Install Claude Code Manager", "category": "Terminal" }
+			{ "command": "terminalHub.showManager", "title": "Show Claude Code Manager", "category": "Terminal" },
+			{ "command": "terminalHub.pasteImage", "title": "Paste Clipboard Image or Files as Path", "category": "Terminal" },
+			{ "command": "terminalHub.toggleInputEditor", "title": "Toggle Input Editor", "category": "Terminal" },
+			{ "command": "terminalHub.sendInput", "title": "Send Input Editor Text and Run", "category": "Terminal" },
+			{ "command": "terminalHub.insertInput", "title": "Insert Input Editor Text into Terminal", "category": "Terminal" },
+			{ "command": "terminalHub.runWorkflow", "title": "Run Workflow", "category": "Terminal" },
+			{ "command": "terminalHub.newWorkflow", "title": "New Workflow", "category": "Terminal" },
+			{ "command": "terminalHub.openWorkflowsFolder", "title": "Open Workflows Folder", "category": "Terminal" }
 		],
+		"menus": {
+			"commandPalette": [
+				{ "command": "terminalHub.sendInput", "when": "resourceFilename =~ /terminal-input[.](ps1|sh|md)$/" },
+				{ "command": "terminalHub.insertInput", "when": "resourceFilename =~ /terminal-input[.](ps1|sh|md)$/" }
+			]
+		},
 		"keybindings": [
-			{ "command": "workbench.view.extension.claudeCodeManager", "key": "ctrl+alt+m" }
+			{ "command": "terminalHub.showManager", "key": "ctrl+alt+m" },
+			{ "command": "terminalHub.pasteImage", "key": "alt+v", "when": "terminalFocus" },
+			{ "command": "terminalHub.toggleInputEditor", "key": "ctrl+alt+i" },
+			{ "command": "terminalHub.runWorkflow", "key": "ctrl+alt+w" },
+			{ "command": "terminalHub.sendInput", "key": "ctrl+enter", "when": "editorTextFocus && resourceFilename =~ /terminal-input[.](ps1|sh|md)$/" },
+			{ "command": "terminalHub.insertInput", "key": "ctrl+shift+enter", "when": "editorTextFocus && resourceFilename =~ /terminal-input[.](ps1|sh|md)$/" }
 		],
 		"configuration": {
 			"title": "Terminal Hub",
@@ -35,10 +53,15 @@
 					"default": true,
 					"description": "Install Claude Code Manager from Open VSX on startup when it is missing."
 				},
-				"terminalHub.closeSideBarsOnStartup": {
+				"terminalHub.openManagerOnStartup": {
 					"type": "boolean",
 					"default": true,
-					"description": "Start with both side bars closed so only the terminal is visible. Ctrl+Alt+M opens Claude Code Manager."
+					"description": "Show Claude Code Manager in the secondary side bar (right) when a window opens. The primary side bar starts closed either way."
+				},
+				"terminalHub.workflowsDir": {
+					"type": "string",
+					"default": "",
+					"description": "Folder with workflow YAML files. Empty means ~/.vscodium-term/workflows."
 				}
 			}
 		}
