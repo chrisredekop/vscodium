@@ -179,11 +179,19 @@ function activate(context) {
 		})
 	);
 
-	// Fresh windows open the Explorer in the primary side bar; show Claude Code Manager there instead.
+	// Terminal first: start with both side bars closed unless configured otherwise.
 	setTimeout(async () => {
 		const present = await ensureManager();
-		if (present && config().get('openManagerOnStartup', true)) {
+		if (present && config().get('openManagerOnStartup', false)) {
 			await showManager();
+		} else if (config().get('closeSideBarsOnStartup', true)) {
+			try {
+				await vscode.commands.executeCommand('workbench.action.closeSidebar');
+				await vscode.commands.executeCommand('workbench.action.closeAuxiliaryBar');
+				await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
+			} catch {
+				// layout commands unavailable: keep the restored layout
+			}
 		}
 	}, 1500);
 }

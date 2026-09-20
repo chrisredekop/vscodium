@@ -56,7 +56,8 @@
 			]
 		},
 		"keybindings": [
-			{ "command": "terminalHub.commands.focus", "key": "ctrl+alt+c" }
+			{ "command": "terminalHub.commands.focus", "key": "ctrl+alt+c" },
+			{ "command": "workbench.view.extension.claudeCodeManager", "key": "ctrl+alt+m" }
 		],
 		"configuration": {
 			"title": "Terminal Hub",
@@ -73,8 +74,13 @@
 				},
 				"terminalHub.openManagerOnStartup": {
 					"type": "boolean",
+					"default": false,
+					"description": "Show Claude Code Manager in the primary side bar when a window opens. Off by default: use Ctrl+Alt+M or the status bar entry."
+				},
+				"terminalHub.closeSideBarsOnStartup": {
+					"type": "boolean",
 					"default": true,
-					"description": "Show Claude Code Manager in the primary side bar when a window opens."
+					"description": "Start with both side bars closed so only the terminal is visible."
 				}
 			}
 		}
