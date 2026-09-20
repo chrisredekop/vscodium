@@ -93,6 +93,8 @@
 			}
 		},
 		"keybindings": [
+			{ "command": "workbench.action.terminal.sendSequence", "key": "shift+enter", "when": "terminalFocus", "args": { "text": "\u001b\r" } },
+			{ "command": "workbench.action.terminal.sendSequence", "key": "ctrl+enter", "when": "terminalFocus", "args": { "text": "\u001b\r" } },
 			{ "command": "workbench.action.terminal.new", "key": "ctrl+shift+t" },
 			{ "command": "workbench.action.terminal.newWithProfile", "key": "ctrl+shift+space" },
 			{ "command": "workbench.action.closeActiveEditor", "key": "ctrl+shift+w" },
