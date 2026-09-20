@@ -28,8 +28,24 @@ def render(svg, size, png, background=None):
     return Image.open(png).convert('RGBA')
 
 
-icon = render(HIER / 'codium-terminal-icon.svg', 1024, ARBEIT / 'icon-1024.png')
 mark = render(HIER / 'codium_cnl.svg', 1024, ARBEIT / 'mark-1024.png')
+
+
+def fit(img, size=1024, margin=0.02):
+    """Marke auf transparentem Quadrat, an den sichtbaren Rand beschnitten und fast randlos eingepasst."""
+    box = img.getbbox()
+    cut = img.crop(box)
+    inner = int(size * (1 - 2 * margin))
+    scale = inner / max(cut.size)
+    cut = cut.resize((max(1, round(cut.width * scale)), max(1, round(cut.height * scale))), Image.LANCZOS)
+    out = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    out.alpha_composite(cut, ((size - cut.width) // 2, (size - cut.height) // 2))
+    return out
+
+
+# Ueberall dasselbe farbige Icon ohne Platte: Exe, Taskleiste, Titelzeile, Kacheln, PWA.
+icon = fit(mark)
+icon.save(ARBEIT / 'icon-1024.png')
 
 # Windows: Exe-/Fenster-Icon, Kachelbilder
 win32 = ZIEL / 'resources' / 'win32'
@@ -50,7 +66,7 @@ icon.save(darwin / 'code.icns', sizes=[(1024, 1024), (512, 512), (256, 256), (12
 linux = ZIEL / 'resources' / 'linux'
 linux.mkdir(parents=True, exist_ok=True)
 icon.resize((512, 512), Image.LANCZOS).save(linux / 'code.png')
-shutil.copy(HIER / 'codium-terminal-icon.svg', linux / 'code.svg')
+shutil.copy(HIER / 'codium_cnl.svg', linux / 'code.svg')
 
 # Server / PWA
 server = ZIEL / 'resources' / 'server'
@@ -59,10 +75,10 @@ icon.resize((192, 192), Image.LANCZOS).save(server / 'code-192.png')
 icon.resize((512, 512), Image.LANCZOS).save(server / 'code-512.png')
 icon.save(server / 'favicon.ico', sizes=[(64, 64), (48, 48), (32, 32), (16, 16)])
 
-# Workbench: Medienicon (hell) und Wasserzeichen
+# Workbench: Medienicon (farbig, transparent) und Wasserzeichen
 media = ZIEL / 'src' / 'vs' / 'workbench' / 'browser' / 'media'
 media.mkdir(parents=True, exist_ok=True)
-clt = (HIER / 'codium_clt.svg').read_text(encoding='utf-8').replace('width="100" height="100"', 'width="1024" height="1024"', 1)
+clt = (HIER / 'codium_cnl.svg').read_text(encoding='utf-8').replace('width="100" height="100"', 'width="1024" height="1024"', 1)
 (media / 'code-icon.svg').write_text(clt, encoding='utf-8')
 letterpress = ZIEL / 'src' / 'vs' / 'workbench' / 'browser' / 'parts' / 'editor' / 'media'
 letterpress.mkdir(parents=True, exist_ok=True)

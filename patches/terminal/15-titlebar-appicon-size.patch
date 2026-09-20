@@ -1,0 +1,9 @@
+diff --git a/src/vs/workbench/browser/parts/titlebar/media/titlebarpart.css b/src/vs/workbench/browser/parts/titlebar/media/titlebarpart.css
+index 16d2fa44..f031b3b4 100644
+--- a/src/vs/workbench/browser/parts/titlebar/media/titlebarpart.css
++++ b/src/vs/workbench/browser/parts/titlebar/media/titlebarpart.css
+@@ -295,3 +295,3 @@
+ 	background-position: center center;
+-	background-size: 16px;
++	background-size: 24px;
+ }
