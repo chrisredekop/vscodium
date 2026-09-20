@@ -1,8 +1,8 @@
 {
 	"name": "terminal-hub",
 	"displayName": "Terminal Hub",
-	"description": "Clickable command index for terminals, keeps one terminal open, and bootstraps Claude Code Manager.",
-	"version": "1.1.0",
+	"description": "Keeps one terminal open, starts with side bars closed, and installs Claude Code Manager from Open VSX when missing.",
+	"version": "1.2.0",
 	"publisher": "vscodium",
 	"license": "MIT",
 	"engines": {
@@ -16,47 +16,10 @@
 		"onStartupFinished"
 	],
 	"contributes": {
-		"viewsContainers": {
-			"secondarySidebar": [
-				{
-					"id": "terminalHub",
-					"title": "Terminal",
-					"icon": "$(terminal)"
-				}
-			]
-		},
-		"views": {
-			"terminalHub": [
-				{
-					"id": "terminalHub.commands",
-					"name": "Commands",
-					"icon": "$(terminal)"
-				}
-			]
-		},
 		"commands": [
-			{ "command": "terminalHub.refresh", "title": "Refresh", "category": "Terminal", "icon": "$(refresh)" },
-			{ "command": "terminalHub.revealCommand", "title": "Reveal Command in Terminal", "category": "Terminal" },
-			{ "command": "terminalHub.copyCommand", "title": "Copy Command Line", "category": "Terminal", "icon": "$(copy)" },
-			{ "command": "terminalHub.rerunCommand", "title": "Run Command Again", "category": "Terminal", "icon": "$(debug-rerun)" },
 			{ "command": "terminalHub.installManager", "title": "Install Claude Code Manager", "category": "Terminal" }
 		],
-		"menus": {
-			"commandPalette": [
-				{ "command": "terminalHub.revealCommand", "when": "false" },
-				{ "command": "terminalHub.copyCommand", "when": "false" },
-				{ "command": "terminalHub.rerunCommand", "when": "false" }
-			],
-			"view/title": [
-				{ "command": "terminalHub.refresh", "when": "view == terminalHub.commands", "group": "navigation@9" }
-			],
-			"view/item/context": [
-				{ "command": "terminalHub.copyCommand", "when": "view == terminalHub.commands && viewItem == command", "group": "inline@1" },
-				{ "command": "terminalHub.rerunCommand", "when": "view == terminalHub.commands && viewItem == command", "group": "inline@2" }
-			]
-		},
 		"keybindings": [
-			{ "command": "terminalHub.commands.focus", "key": "ctrl+alt+c" },
 			{ "command": "workbench.view.extension.claudeCodeManager", "key": "ctrl+alt+m" }
 		],
 		"configuration": {
@@ -72,15 +35,10 @@
 					"default": true,
 					"description": "Install Claude Code Manager from Open VSX on startup when it is missing."
 				},
-				"terminalHub.openManagerOnStartup": {
-					"type": "boolean",
-					"default": false,
-					"description": "Show Claude Code Manager in the primary side bar when a window opens. Off by default: use Ctrl+Alt+M or the status bar entry."
-				},
 				"terminalHub.closeSideBarsOnStartup": {
 					"type": "boolean",
 					"default": true,
-					"description": "Start with both side bars closed so only the terminal is visible."
+					"description": "Start with both side bars closed so only the terminal is visible. Ctrl+Alt+M opens Claude Code Manager."
 				}
 			}
 		}
