@@ -112,8 +112,8 @@ async function pasteImage() {
 		'Add-Type -AssemblyName System.Windows.Forms',
 		'Add-Type -AssemblyName System.Drawing',
 		'$img = [System.Windows.Forms.Clipboard]::GetImage()',
-		`if ($img) { $img.Save('${file.replace(/'/g, "''")}', [System.Drawing.Imaging.ImageFormat]::Png); 'IMAGE' }`,
-		"elseif ([System.Windows.Forms.Clipboard]::ContainsFileDropList()) { 'FILES'; [System.Windows.Forms.Clipboard]::GetFileDropList() }",
+		`if ($img) { $img.Save('${file.replace(/'/g, "''")}', [System.Drawing.Imaging.ImageFormat]::Png); 'IMAGE' } ` +
+		"elseif ([System.Windows.Forms.Clipboard]::ContainsFileDropList()) { 'FILES'; [System.Windows.Forms.Clipboard]::GetFileDropList() } " +
 		"else { 'NONE' }"
 	].join('; ');
 	let lines;
