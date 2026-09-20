@@ -77,6 +77,19 @@ async function showManager() {
 // Sending text to the active terminal
 // ---------------------------------------------------------------------------
 
+let lastTerminal;
+
+// Focuses an existing terminal wherever it lives (editor area or panel). The built-in
+// "terminal.focus" command would open a new panel terminal next to terminal editors.
+async function focusTerminal() {
+	const terminal = vscode.window.activeTerminal || lastTerminal || vscode.window.terminals[0];
+	if (terminal) {
+		terminal.show(false);
+	} else {
+		await vscode.commands.executeCommand('workbench.action.terminal.new');
+	}
+}
+
 // Goes through the terminal's paste path so bracketed paste applies: multi-line text
 // reaches programs such as Claude Code as one paste instead of several Enter presses.
 async function pasteToTerminal(terminal, text, execute) {
@@ -157,7 +170,7 @@ async function toggleInputEditor(storageDir) {
 	const open = findInputTab();
 	if (open) {
 		await vscode.window.tabGroups.close(open);
-		await vscode.commands.executeCommand('workbench.action.terminal.focus');
+		await focusTerminal();
 		return;
 	}
 	const uri = inputFileFor(vscode.window.activeTerminal, storageDir);
@@ -172,8 +185,6 @@ async function toggleInputEditor(storageDir) {
 		await vscode.commands.executeCommand('vscode.setEditorLayout', { orientation: 1, groups: [{ size: 0.7 }, { size: 0.3 }] });
 	}
 }
-
-let lastTerminal;
 
 async function sendInput(execute) {
 	const editor = vscode.window.activeTextEditor;
@@ -350,7 +361,7 @@ async function runWorkflow() {
 	}
 	const terminal = vscode.window.activeTerminal || lastTerminal || vscode.window.terminals[0] || vscode.window.createTerminal();
 	await pasteToTerminal(terminal, command, false);
-	await vscode.commands.executeCommand('workbench.action.terminal.focus');
+	await focusTerminal();
 }
 
 // ---------------------------------------------------------------------------
@@ -411,7 +422,7 @@ function activate(context) {
 			} else {
 				await vscode.commands.executeCommand('workbench.action.closeAuxiliaryBar');
 			}
-			await vscode.commands.executeCommand('workbench.action.terminal.focus');
+			await focusTerminal();
 		} catch {
 			// layout commands unavailable: keep the restored layout
 		}
