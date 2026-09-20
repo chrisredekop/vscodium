@@ -411,7 +411,7 @@ function activate(context) {
 			} else {
 				await vscode.commands.executeCommand('workbench.action.closeAuxiliaryBar');
 			}
-			await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
+			await vscode.commands.executeCommand('workbench.action.terminal.focus');
 		} catch {
 			// layout commands unavailable: keep the restored layout
 		}

@@ -7,3 +7,8 @@ index 601d104b..75576718 100644
 -				'default': isWeb ? 'compact' : 'classic',
 +				'default': isWeb ? 'compact' : 'toggle',
  				'scope': ConfigurationScope.APPLICATION,
+@@ -993,3 +993,3 @@ const registry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Con
+ 				'type': 'boolean',
+-				'default': true,
++				'default': false,
+ 				'scope': ConfigurationScope.APPLICATION,
