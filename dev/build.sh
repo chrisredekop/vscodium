@@ -41,6 +41,7 @@ while getopts ":ilopst" opt; do
       ;;
     t)
       export BINARY_NAME="codium-term"
+      export DISABLE_UPDATE="yes"
       export TERMINAL_FIRST="yes"
       ;;
     *)

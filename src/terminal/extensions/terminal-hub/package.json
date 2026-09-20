@@ -1,8 +1,8 @@
 {
 	"name": "terminal-hub",
 	"displayName": "Terminal Hub",
-	"description": "Claude Code sessions and a clickable command index for terminals in the secondary side bar.",
-	"version": "1.0.0",
+	"description": "Clickable command index for terminals, keeps one terminal open, and bootstraps Claude Code Manager.",
+	"version": "1.1.0",
 	"publisher": "vscodium",
 	"license": "MIT",
 	"engines": {
@@ -20,98 +20,61 @@
 			"secondarySidebar": [
 				{
 					"id": "terminalHub",
-					"title": "Claude",
-					"icon": "$(sparkle)"
+					"title": "Terminal",
+					"icon": "$(terminal)"
 				}
 			]
 		},
 		"views": {
 			"terminalHub": [
 				{
-					"id": "terminalHub.sessions",
-					"name": "Claude Sessions",
-					"icon": "$(sparkle)"
-				},
-				{
 					"id": "terminalHub.commands",
-					"name": "Terminal Commands",
+					"name": "Commands",
 					"icon": "$(terminal)"
 				}
 			]
 		},
 		"commands": [
-			{ "command": "terminalHub.newSession", "title": "New Claude Session", "category": "Claude", "icon": "$(add)" },
-			{ "command": "terminalHub.newSessionSkip", "title": "New Claude Session (skip permissions)", "category": "Claude", "icon": "$(zap)" },
-			{ "command": "terminalHub.continueLast", "title": "Continue Last Session", "category": "Claude", "icon": "$(debug-continue)" },
-			{ "command": "terminalHub.continueLastSkip", "title": "Continue Last Session (skip permissions)", "category": "Claude" },
-			{ "command": "terminalHub.resume", "title": "Resume Session", "category": "Claude", "icon": "$(debug-start)" },
-			{ "command": "terminalHub.resumeSkip", "title": "Resume Session (skip permissions)", "category": "Claude", "icon": "$(zap)" },
-			{ "command": "terminalHub.fork", "title": "Fork Session", "category": "Claude" },
-			{ "command": "terminalHub.forkSkip", "title": "Fork Session (skip permissions)", "category": "Claude" },
-			{ "command": "terminalHub.copySessionId", "title": "Copy Session ID", "category": "Claude" },
-			{ "command": "terminalHub.refresh", "title": "Refresh", "category": "Claude", "icon": "$(refresh)" },
+			{ "command": "terminalHub.refresh", "title": "Refresh", "category": "Terminal", "icon": "$(refresh)" },
 			{ "command": "terminalHub.revealCommand", "title": "Reveal Command in Terminal", "category": "Terminal" },
 			{ "command": "terminalHub.copyCommand", "title": "Copy Command Line", "category": "Terminal", "icon": "$(copy)" },
-			{ "command": "terminalHub.rerunCommand", "title": "Run Command Again", "category": "Terminal", "icon": "$(debug-rerun)" }
+			{ "command": "terminalHub.rerunCommand", "title": "Run Command Again", "category": "Terminal", "icon": "$(debug-rerun)" },
+			{ "command": "terminalHub.installManager", "title": "Install Claude Code Manager", "category": "Terminal" }
 		],
 		"menus": {
 			"commandPalette": [
-				{ "command": "terminalHub.resume", "when": "false" },
-				{ "command": "terminalHub.resumeSkip", "when": "false" },
-				{ "command": "terminalHub.fork", "when": "false" },
-				{ "command": "terminalHub.forkSkip", "when": "false" },
-				{ "command": "terminalHub.copySessionId", "when": "false" },
 				{ "command": "terminalHub.revealCommand", "when": "false" },
 				{ "command": "terminalHub.copyCommand", "when": "false" },
 				{ "command": "terminalHub.rerunCommand", "when": "false" }
 			],
 			"view/title": [
-				{ "command": "terminalHub.newSession", "when": "view == terminalHub.sessions", "group": "navigation@1" },
-				{ "command": "terminalHub.newSessionSkip", "when": "view == terminalHub.sessions", "group": "navigation@2" },
-				{ "command": "terminalHub.continueLast", "when": "view == terminalHub.sessions", "group": "navigation@3" },
-				{ "command": "terminalHub.continueLastSkip", "when": "view == terminalHub.sessions", "group": "1_claude@1" },
-				{ "command": "terminalHub.refresh", "when": "view == terminalHub.sessions || view == terminalHub.commands", "group": "navigation@9" }
+				{ "command": "terminalHub.refresh", "when": "view == terminalHub.commands", "group": "navigation@9" }
 			],
 			"view/item/context": [
-				{ "command": "terminalHub.resume", "when": "view == terminalHub.sessions && viewItem == session", "group": "inline@1" },
-				{ "command": "terminalHub.resumeSkip", "when": "view == terminalHub.sessions && viewItem == session", "group": "inline@2" },
-				{ "command": "terminalHub.fork", "when": "view == terminalHub.sessions && (viewItem == session || viewItem == running)", "group": "1_fork@1" },
-				{ "command": "terminalHub.forkSkip", "when": "view == terminalHub.sessions && (viewItem == session || viewItem == running)", "group": "1_fork@2" },
-				{ "command": "terminalHub.copySessionId", "when": "view == terminalHub.sessions && (viewItem == session || viewItem == running)" },
 				{ "command": "terminalHub.copyCommand", "when": "view == terminalHub.commands && viewItem == command", "group": "inline@1" },
 				{ "command": "terminalHub.rerunCommand", "when": "view == terminalHub.commands && viewItem == command", "group": "inline@2" }
 			]
 		},
 		"keybindings": [
-			{ "command": "terminalHub.sessions.focus", "key": "ctrl+alt+c" }
+			{ "command": "terminalHub.commands.focus", "key": "ctrl+alt+c" }
 		],
 		"configuration": {
 			"title": "Terminal Hub",
 			"properties": {
+				"terminalHub.keepOneTerminal": {
+					"type": "boolean",
+					"default": true,
+					"description": "Open a new terminal when the last terminal closes and no other tab is open, instead of leaving an empty window."
+				},
+				"terminalHub.installManager": {
+					"type": "boolean",
+					"default": true,
+					"description": "Install Claude Code Manager from Open VSX on startup when it is missing."
+				},
 				"terminalHub.openManagerOnStartup": {
 					"type": "boolean",
 					"default": true,
 					"description": "Show Claude Code Manager in the primary side bar when a window opens."
-				},
-				"terminalHub.claudeCommand": {
-					"type": "string",
-					"default": "claude",
-					"description": "Command used to start Claude Code."
-				},
-				"terminalHub.skipPermissionsFlag": {
-					"type": "string",
-					"default": "--dangerously-skip-permissions",
-					"description": "Flag appended by the 'skip permissions' actions."
-				},
-				"terminalHub.recentProjects": {
-					"type": "number",
-					"default": 6,
-					"description": "Number of recent projects listed under Claude Sessions."
-				},
-				"terminalHub.recentSessionsPerProject": {
-					"type": "number",
-					"default": 8,
-					"description": "Number of recent sessions listed per project."
 				}
 			}
 		}
