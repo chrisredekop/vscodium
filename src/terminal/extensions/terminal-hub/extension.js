@@ -62,6 +62,16 @@ async function ensureManager() {
 }
 
 async function showManager() {
+	// The manager's right-hand view is gated on a context key that its activate() sets.
+	// Opening the container before activation would show an empty side bar.
+	const ext = vscode.extensions.getExtension(MANAGER_ID);
+	if (ext && !ext.isActive) {
+		try {
+			await ext.activate();
+		} catch (error) {
+			console.warn('[terminalHub] activating Claude Code Manager failed', error);
+		}
+	}
 	for (const view of MANAGER_VIEWS) {
 		try {
 			await vscode.commands.executeCommand(view);
